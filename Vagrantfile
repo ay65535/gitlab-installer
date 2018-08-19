@@ -52,6 +52,7 @@ mount_option_git_www = %w[uid=997 gid=998 dmode=755 fmode=644]
 mount_option_root_www = %w[uid=0 gid=998 dmode=755 fmode=644]
 mount_option_psql_root = %w[uid=995 gid=0 dmode=755 fmode=644]
 mount_option_redis_git = %w[uid=996 gid=997 dmode=755 fmode=644]
+mount_option_everyone = %w[uid=1000 gid=1000 dir_mode=0777 file_mode=0777]
 
 Vagrant.require_version '>= 1.8.0'
 
@@ -92,7 +93,8 @@ Vagrant.configure('2') do |config|
     conf.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__exclude: %w[.git/ gitlab/], rsync__auto: true
     conf.vm.synced_folder 'gitlab/conf', '/etc/gitlab', create: true
     conf.vm.synced_folder 'gitlab/logs', '/var/log/gitlab', create: true
-    conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, type: 'smb', smb_username: smb_user, smb_password: smb_pass
+    conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, type: 'smb', smb_username: smb_user, smb_password: smb_pass,
+                          mount_options: mount_option_everyone
 
     # conf.vm.synced_folder 'gitlab/data/git-data',
     #                       '/var/opt/gitlab/git-data', create: true, mount_options: mount_option_gitdata
