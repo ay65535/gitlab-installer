@@ -63,7 +63,7 @@ check_for_backwards_compatibility()
 
 rewrite_hostname()
 {
-    sed -i -e "s,^external_url.*,external_url 'https://${GITLAB_HOSTNAME}/'," /etc/gitlab/gitlab.rb
+    sed -i -e "s,^external_url.*,external_url '${EXTERNAL_URL}'," /etc/gitlab/gitlab.rb
 }
 
 # All commands expect root access.
@@ -77,8 +77,6 @@ check_for_gitlab_rb
 check_for_backwards_compatibility
 
 echo "Installing ${GITLAB_PACKAGE} via apt ..."
-test ! -d /etc/gitlab && mkdir -p /etc/gitlab
-cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
 if [[ ${GITLAB_PORT} == 80 ]]; then
     export EXTERNAL_URL="http://${GITLAB_HOSTNAME}/"
 elif [[ ${GITLAB_PORT} == 443 ]]; then
@@ -86,6 +84,9 @@ elif [[ ${GITLAB_PORT} == 443 ]]; then
 else
     export EXTERNAL_URL="https://${GITLAB_HOSTNAME}:${GITLAB_PORT}/"
 fi
+test ! -d /etc/gitlab && mkdir -p /etc/gitlab
+cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
+rewrite_hostname
 apt-get install -y ${GITLAB_PACKAGE}
 
 # fix the config and reconfigure
