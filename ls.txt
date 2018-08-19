@@ -1,0 +1,17 @@
+root@localhost:/var/opt/gitlab# ls -lAF
+drwxr-xr-x git               git        .bundle/
+drwxr-x--- gitlab-prometheus root       alertmanager/
+drwx------ git               root       backups/
+drwx------ git               root       gitaly/
+drwxr-xr-x git               root       gitlab-ci/
+drwxr-xr-x git               root       gitlab-monitor/
+drwxr-xr-x git               root       gitlab-rails/
+drwx------ git               root       gitlab-shell/
+drwxr-x--- git               gitlab-www gitlab-workhorse/
+drwx------ root              root       logrotate/
+drwxr-x--- root              gitlab-www nginx/
+drwxr-xr-x root              root       node-exporter/
+drwx------ gitlab-psql       root       postgres-exporter/
+drwxr-xr-x gitlab-psql       root       postgresql/
+drwxr-x--- gitlab-prometheus root       prometheus/
+drwxr-x--- gitlab-redis      git        redis/

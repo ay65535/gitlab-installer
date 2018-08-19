@@ -1,0 +1,9 @@
+export GITLAB_CPUS=2
+export GITLAB_PORT=443
+#export GITLAB_MEMORY=1526
+export GITLAB_MEMORY=2048
+#export GITLAB_MEMORY=3072
+export GITLAB_SWAP=3
+#export VAGRANT_DETECTED_OS='mingw'
+
+env | egrep -i "proxy|^(VAGRANT|GITLAB|MINGW|MSYS|CYG)"

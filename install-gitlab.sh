@@ -3,7 +3,7 @@
 
 # Usage: Copy 'gitlab.rb.example' as 'gitlab.rb', then 'vagrant up'.
 
-set -e
+set -ex
 
 # these are normally passed via Vagrantfile to environment
 # but if you run this on bare metal they need to be reset
@@ -61,27 +61,6 @@ check_for_backwards_compatibility()
     fi
 }
 
-set_apt_pdiff_off()
-{
-    echo 'Acquire::PDiffs "false";' > /etc/apt/apt.conf.d/85pdiff-off
-}
-
-install_swap_file()
-{
-    # "GITLAB_SWAP" is passed in environment by shell provisioner
-    if [[ $GITLAB_SWAP > 0 ]]; then
-        echo "Creating swap file of ${GITLAB_SWAP}G size"
-        SWAP_FILE=/.swap.file
-        dd if=/dev/zero of=$SWAP_FILE bs=1G count=$GITLAB_SWAP
-        mkswap $SWAP_FILE
-        echo "$SWAP_FILE none swap sw 0 0" >> /etc/fstab
-        chmod 600 $SWAP_FILE
-        swapon -a
-    else
-        echo "Skipped swap file creation due 'GITLAB_SWAP' set to 0"
-    fi
-}
-
 rewrite_hostname()
 {
     sed -i -e "s,^external_url.*,external_url 'https://${GITLAB_HOSTNAME}/'," /etc/gitlab/gitlab.rb
@@ -97,36 +76,24 @@ set_gitlab_edition
 check_for_gitlab_rb
 check_for_backwards_compatibility
 
-# install swap file for more memory
-install_swap_file
-
-# install tools to automate this install
-apt-get -y update
-apt-get -y install debconf-utils curl
-
-# install the few dependencies we have
-echo "postfix postfix/main_mailer_type select Internet Site" | debconf-set-selections
-echo "postfix postfix/mailname string $GITLAB_HOSTNAME" | debconf-set-selections
-apt-get -y install openssh-server postfix
-
-# generate ssl keys
-apt-get -y install ca-certificates ssl-cert
-make-ssl-cert generate-default-snakeoil --force-overwrite
-
-# download omnibus-gitlab package (300M) with apt
-# vagrant-cachier plugin hightly recommended
-echo "Setting up Gitlab deb repository ..."
-set_apt_pdiff_off
-curl https://packages.gitlab.com/install/repositories/gitlab/${GITLAB_PACKAGE}/script.deb.sh | sudo bash
 echo "Installing ${GITLAB_PACKAGE} via apt ..."
+test ! -d /etc/gitlab && mkdir -p /etc/gitlab
+cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
+if [[ ${GITLAB_PORT} == 80 ]]; then
+    export EXTERNAL_URL="http://${GITLAB_HOSTNAME}/"
+elif [[ ${GITLAB_PORT} == 443 ]]; then
+    export EXTERNAL_URL="https://${GITLAB_HOSTNAME}/"
+else
+    export EXTERNAL_URL="https://${GITLAB_HOSTNAME}:${GITLAB_PORT}/"
+fi
 apt-get install -y ${GITLAB_PACKAGE}
 
 # fix the config and reconfigure
-cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
-rewrite_hostname
-gitlab-ctl reconfigure
+#cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
+#rewrite_hostname
+#gitlab-ctl reconfigure
 
 # done
 echo "Done!"
-echo " Login at https://${GITLAB_HOSTNAME}:${GITLAB_PORT}/, username 'root'. Password will be reset on first login."
+echo " Login at ${EXTERNAL_URL}, username 'root'. Password will be reset on first login."
 echo " Config found at /etc/gitlab/gitlab.rb and updated by 'sudo gitlab-ctl reconfigure'"

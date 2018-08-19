@@ -1,0 +1,10 @@
+Layout/EmptyLines:
+  Enabled: false
+Layout/LeadingCommentSpace:
+  Enabled: false
+Layout/EndOfLine:
+  EnforcedStyle: lf
+LineLength:
+  Max: 160
+Metrics/BlockLength:
+  Enabled: false

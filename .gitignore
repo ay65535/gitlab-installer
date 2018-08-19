@@ -1,4 +1,8 @@
 /.vagrant
-/gitlab.rb
+#/gitlab.rb
 /*.log
 
+gitlab.rb.template
+gitlab.yml.example
+/gitlab/
+configure-local.*

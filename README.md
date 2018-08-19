@@ -51,7 +51,7 @@ Check tags for releases matching GitLab releases.
 
 From Gitlab version 7.1.1 onwards, it utilizes the omnibus package instead of executing
 long setup scripts. If you wish to use setup scripts or Puppet/Chef, there are plenty of
-other choises.
+other choices.
 
 From Gitlab version 7.11.2 onwards, it uses packageserver with apt. Which means there is
 little reason to change the installer anymore.
