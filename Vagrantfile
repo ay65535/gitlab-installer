@@ -44,7 +44,8 @@ mount_option_gitlabrails_shared_pages = %w[dmode=0750 uid=997 gid=998]
 # for /var/opt/gitlab/gitlab-ci/builds
 mount_option_gitlabci_builds = %w[dmode=0700 uid=997 gid=0]
 # for /var/opt/gitlab/.ssh
-mount_option_dotssh = %w[dmode=0700 fmode=600 uid=997 gid=997]
+mount_option_dotssh = %w[dmode=0777 fmode=666 uid=997 gid=997]
+#mount_option_dotssh = %w[dmode=0700 fmode=600 uid=997 gid=997]
 
 mount_option_prom_root = %w[uid=994 gid=0 dmode=755 fmode=644]
 mount_option_root_root = %w[uid=0 gid=0 dmode=755 fmode=644]
@@ -96,6 +97,12 @@ Vagrant.configure('2') do |config|
     conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, type: 'smb', smb_username: smb_user, smb_password: smb_pass,
                           mount_options: mount_option_everyone
 
+
+    # //10.x.x.x/vgt-xxxx-xxxx on /var/opt/gitlab type cifs (rw,relatime,vers=2.0,sec=ntlmssp,cache=strict,username=xxx,domain=xxx,uid=1000,forceuid,gid=1000,forcegid,addr=10.x.x.x,file_mode=0777,dir_mode=0777,nounix,serverino,mapposix,rsize=65536,wsize=65536,echo_interval=60,actimeo=1)
+    # etc_gitlab on /etc/gitlab type vboxsf (rw,nodev,relatime)
+    # var_log_gitlab on /var/log/gitlab type vboxsf (rw,nodev,relatime)
+    # vagrant-cache on /tmp/vagrant-cache type vboxsf (rw,nodev,relatime)
+
     # conf.vm.synced_folder 'gitlab/data/git-data',
     #                       '/var/opt/gitlab/git-data', create: true, mount_options: mount_option_gitdata
     # conf.vm.synced_folder 'gitlab/data/git-data/repositories',
@@ -112,8 +119,8 @@ Vagrant.configure('2') do |config|
     #                       '/var/opt/gitlab/gitlab-rails/shared/pages', create: true, mount_options: mount_option_gitlabrails_shared_pages
     # conf.vm.synced_folder 'gitlab/data/gitlab-ci/builds',
     #                       '/var/opt/gitlab/gitlab-ci/builds', create: true, mount_options: mount_option_gitlabci_builds
-    # conf.vm.synced_folder 'gitlab/data/.ssh',
-    #                       '/var/opt/gitlab/.ssh', create: true, mount_options: mount_option_dotssh
+    conf.vm.synced_folder 'gitlab/data/.ssh',
+                          '/var/opt/gitlab/.ssh', create: true, mount_options: mount_option_dotssh, id: 'var_opt_gitlab_dotssh'
   end
 
   # GitLab recommended specs
