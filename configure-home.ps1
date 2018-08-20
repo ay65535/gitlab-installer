@@ -5,7 +5,7 @@ $env:GITLAB_PORT = 443
 $env:GITLAB_MEMORY = 1526
 $env:GITLAB_SWAP = 3
 $env:GITLAB_HOSTNAME = $env:GITLAB_HOST
-$env:EXTERNAL_URL = $env:GITLAB_HOSTNAME
+$env:EXTERNAL_URL = "https://$env:GITLAB_HOSTNAME"
 $env:APT_MIRROR = 'http://ftp.jaist.ac.jp/pub/Linux/ubuntu/'
 #$env:VAGRANT_DETECTED_OS = 'mingw'
 
