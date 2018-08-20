@@ -60,18 +60,18 @@ Vagrant.configure('2') do |config|
   config.cache.scope = :box if Vagrant.has_plugin?('vagrant-cachier')
 
   config.vm.define :gitlab do |conf|
-    #required_plugins = %w[vagrant-global-status vagrant-vbguest vagrant-cachier vagrant-proxyconf vagrant-disksize]
-    #need_retry = false
-    #required_plugins.each do |plugin|
-    #  unless Vagrant.has_plugin? plugin
-    #    system "vagrant plugin install #{plugin}"
-    #    need_retry = true
-    #  end
-    #end
-    #exec 'vagrant ' + ARGV.join(' ') if need_retry
-    #conf.proxy.http = proxy
-    #conf.proxy.https = proxy
-    #conf.proxy.no_proxy = noproxy
+    required_plugins = %w[vagrant-global-status vagrant-vbguest vagrant-cachier vagrant-proxyconf vagrant-disksize]
+    need_retry = false
+    required_plugins.each do |plugin|
+     unless Vagrant.has_plugin? plugin
+       system "vagrant plugin install #{plugin}"
+       need_retry = true
+     end
+    end
+    exec 'vagrant ' + ARGV.join(' ') if need_retry
+    conf.proxy.http = proxy
+    conf.proxy.https = proxy
+    conf.proxy.no_proxy = noproxy
 
     # Configure some hostname here
     conf.vm.hostname = host
