@@ -51,7 +51,7 @@ mount_option_prom_root = %w[uid=994 gid=0 dmode=755 fmode=644]
 mount_option_root_root = %w[uid=0 gid=0 dmode=755 fmode=644]
 mount_option_git_www = %w[uid=997 gid=998 dmode=755 fmode=644]
 mount_option_root_www = %w[uid=0 gid=998 dmode=755 fmode=644]
-mount_option_psql_root = %w[uid=995 gid=0 dmode=755 fmode=644]
+mount_option_psql_root = %w[uid=995 gid=0 dmode=755]
 mount_option_redis_git = %w[uid=996 gid=997 dmode=755 fmode=644]
 mount_option_everyone = %w[uid=1000 gid=1000 dir_mode=0777 file_mode=0777]
 
@@ -119,7 +119,11 @@ Vagrant.configure('2') do |config|
     # conf.vm.synced_folder 'gitlab/data/gitlab-ci/builds',
     #                       '/var/opt/gitlab/gitlab-ci/builds', create: true, mount_options: mount_option_gitlabci_builds
     conf.vm.synced_folder 'gitlab/data/.ssh',
-                          '/var/opt/gitlab/.ssh', create: true, mount_options: mount_option_dotssh, id: 'var_opt_gitlab_dotssh'
+                          '/var/opt/gitlab/.ssh',
+                          create: true, mount_options: mount_option_dotssh, id: 'var_opt_gitlab_dotssh'
+    conf.vm.synced_folder 'gitlab/data/postgresql',
+                          '/var/opt/gitlab/postgresql',
+                          create: true, mount_options: mount_option_psql_root
   end
 
   # GitLab recommended specs
