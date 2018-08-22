@@ -1,9 +1,9 @@
 . .\configure-local.ps1
 
-$env:GITLAB_CPUS = 1
+$env:GITLAB_CPUS = 2  # 1,2
 $env:GITLAB_PORT = 443
-$env:GITLAB_MEMORY = 1526
-$env:GITLAB_SWAP = 3
+$env:GITLAB_MEMORY = 2289  # 1526,2289
+$env:GITLAB_SWAP = 4  # 3
 $env:GITLAB_HOSTNAME = $env:GITLAB_HOST
 $env:EXTERNAL_URL = "https://$env:GITLAB_HOSTNAME"
 $env:APT_MIRROR = 'http://ftp.jaist.ac.jp/pub/Linux/ubuntu/'

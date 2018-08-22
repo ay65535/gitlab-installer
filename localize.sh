@@ -27,7 +27,8 @@ check_for_root
 
 # install tools to automate this install
 apt-get -y update
-apt-get -y install language-pack-ja-base language-pack-ja
+apt-get -y install language-pack-ja-base
+#apt-get -y install language-pack-ja-base language-pack-ja
 localectl set-locale LANG=ja_JP.UTF-8 LANGUAGE="ja_JP:ja"
 localectl set-keymap jp106
 source /etc/default/locale

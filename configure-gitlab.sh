@@ -11,6 +11,8 @@ set -ex
 GITLAB_HOSTNAME=${GITLAB_HOSTNAME:-127.0.0.1}
 GITLAB_PORT=${GITLAB_PORT:-8443}
 APT_MIRROR=${APT_MIRROR:-http://ftp.jaist.ac.jp/pub/Linux/ubuntu/}
+GITLAB_SWAPPINESS=${GITLAB_SWAPPINESS:-60}
+GITLAB_CACHE_PRESSURE=${GITLAB_CACHE_PRESSURE:-100}
 
 #
 #  --------------------------------
@@ -78,18 +80,38 @@ set_fastest_mirror()
 install_swap_file()
 {
     # "GITLAB_SWAP" is passed in environment by shell provisioner
-    if [[ -e /.swap.file ]]; then
+    SWAP_FILE=/.swap.file
+    if [[ -e ${SWAP_FILE} ]]; then
         echo "Skipped swap file creation due /.swap.file already available"
     elif [[ ${GITLAB_SWAP} > 0 ]]; then
         echo "Creating swap file of ${GITLAB_SWAP}G size"
-        SWAP_FILE=/.swap.file
-        dd if=/dev/zero of=${SWAP_FILE} bs=1G count=$GITLAB_SWAP
+        #dd if=/dev/zero of=${SWAP_FILE} bs=1G count=$GITLAB_SWAP
+        fallocate -l ${GITLAB_SWAP}G ${SWAP_FILE}
         mkswap ${SWAP_FILE}
+        cp -p /etc/fstab /etc/fstab.bak
         echo "$SWAP_FILE none swap sw 0 0" >> /etc/fstab
         chmod 600 ${SWAP_FILE}
         swapon -a
     else
         echo "Skipped swap file creation due 'GITLAB_SWAP' set to 0"
+    fi
+}
+
+change_swappiness()
+{
+    if [[ ${GITLAB_SWAPPINESS} -ne 60 ]]; then
+        cp --backup=existing -f /etc/sysctl.conf /etc/sysctl.conf
+        echo "vm.swappiness=$GITLAB_SWAPPINESS" >> /etc/sysctl.conf
+        sysctl vm.swappiness=${GITLAB_SWAPPINESS}
+    fi
+}
+
+change_vfs_cache_pressure()
+{
+    if [[ ${GITLAB_CACHE_PRESSURE} -ne 100 ]]; then
+        cp --backup=existing -f /etc/sysctl.conf /etc/sysctl.conf
+        echo "vm.vfs_cache_pressure=$GITLAB_CACHE_PRESSURE" >> /etc/sysctl.conf
+        sysctl vm.vfs_cache_pressure=${GITLAB_CACHE_PRESSURE}
     fi
 }
 
@@ -110,6 +132,8 @@ check_for_backwards_compatibility
 
 # install swap file for more memory
 install_swap_file
+change_swappiness
+change_vfs_cache_pressure
 
 # install tools to automate this install
 set_fastest_mirror ${APT_MIRROR}
@@ -124,7 +148,7 @@ apt-get -y install openssh-server postfix
 
 # generate ssl keys
 apt-get -y install ca-certificates ssl-cert
-#make-ssl-cert generate-default-snakeoil --force-overwrite
+make-ssl-cert generate-default-snakeoil --force-overwrite
 
 # download omnibus-gitlab package (300M) with apt
 # vagrant-cachier plugin highly recommended

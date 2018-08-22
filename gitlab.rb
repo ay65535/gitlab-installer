@@ -914,6 +914,8 @@ nginx['redirect_http_to_https'] = true
 
 # nginx['ssl_certificate'] = "/etc/gitlab/ssl/#{node['fqdn']}.crt"
 # nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/#{node['fqdn']}.key"
+nginx['ssl_certificate'] = "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+nginx['ssl_certificate_key'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
 # nginx['ssl_ciphers'] = "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256"
 # nginx['ssl_prefer_server_ciphers'] = "on"
 
@@ -1061,7 +1063,7 @@ logging['svlogd_size'] = 100 * 1024 * 1024 # rotate after 200 MB of log data
 ################################################################################
 
 ##! **Set only if the select directories are created manually**
-manage_storage_directories['enable'] = false
+# manage_storage_directories['enable'] = false
 # manage_storage_directories['manage_etc'] = false
 
 ################################################################################

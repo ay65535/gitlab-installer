@@ -51,9 +51,10 @@ mount_option_prom_root = %w[uid=994 gid=0 dmode=755 fmode=644]
 mount_option_root_root = %w[uid=0 gid=0 dmode=755 fmode=644]
 mount_option_git_www = %w[uid=997 gid=998 dmode=755 fmode=644]
 mount_option_root_www = %w[uid=0 gid=998 dmode=755 fmode=644]
-mount_option_psql_root = %w[uid=995 gid=0 dmode=755]
-mount_option_redis_git = %w[uid=996 gid=997 dmode=755 fmode=644]
-mount_option_everyone = %w[uid=1000 gid=1000 dir_mode=0777 file_mode=0777]
+mount_option_psql_root = %w[uid=995 gid=0 dmode=0755 fmode=0644]
+mount_option_redis_git = %w[uid=996 gid=997 dmode=750 fmode=640]
+mount_option_everyone = %w[uid=1000 gid=1000 dmode=0777 fmode=0777]
+mount_option_everyone_smb = %w[uid=1000 gid=1000 dir_mode=0777 file_mode=0777]
 
 Vagrant.require_version '>= 1.8.0'
 
@@ -61,7 +62,8 @@ Vagrant.configure('2') do |config|
   config.cache.scope = :box if Vagrant.has_plugin?('vagrant-cachier')
 
   config.vm.define :gitlab do |conf|
-    required_plugins = %w[vagrant-global-status vagrant-vbguest vagrant-cachier vagrant-proxyconf vagrant-disksize]
+    required_plugins = %w[vagrant-vbguest vagrant-cachier vagrant-proxyconf]
+    #required_plugins = %w[vagrant-global-status vagrant-vbguest vagrant-cachier vagrant-proxyconf vagrant-disksize]
     need_retry = false
     required_plugins.each do |plugin|
      unless Vagrant.has_plugin? plugin
@@ -92,10 +94,11 @@ Vagrant.configure('2') do |config|
     # use rsync for synced folder to avoid the need for provider tools
     # added rsync__auto  to enable detect changes on host and sync to guest machine and exclude .git/
     conf.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__exclude: %w[.git/ gitlab/], rsync__auto: true
-    conf.vm.synced_folder 'gitlab/conf', '/etc/gitlab', create: true
-    conf.vm.synced_folder 'gitlab/logs', '/var/log/gitlab', create: true
-    conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, type: 'smb', smb_username: smb_user, smb_password: smb_pass,
-                          mount_options: mount_option_everyone
+    # conf.vm.synced_folder 'gitlab/conf', '/etc/gitlab', create: true
+    # conf.vm.synced_folder 'gitlab/logs', '/var/log/gitlab', create: true, type: 'rsync', rsync__auto: true
+    # conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, mount_options: mount_option_everyone
+    # conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, type: 'smb', smb_username: smb_user, smb_password: smb_pass,
+    #                       mount_options: mount_option_everyone
 
     # //10.x.x.x/vgt-xxxx-xxxx on /var/opt/gitlab type cifs (rw,relatime,vers=2.0,sec=ntlmssp,cache=strict,username=xxx,domain=xxx,uid=1000,forceuid,gid=1000,forcegid,addr=10.x.x.x,file_mode=0777,dir_mode=0777,nounix,serverino,mapposix,rsize=65536,wsize=65536,echo_interval=60,actimeo=1)
     # etc_gitlab on /etc/gitlab type vboxsf (rw,nodev,relatime)
@@ -118,19 +121,23 @@ Vagrant.configure('2') do |config|
     #                       '/var/opt/gitlab/gitlab-rails/shared/pages', create: true, mount_options: mount_option_gitlabrails_shared_pages
     # conf.vm.synced_folder 'gitlab/data/gitlab-ci/builds',
     #                       '/var/opt/gitlab/gitlab-ci/builds', create: true, mount_options: mount_option_gitlabci_builds
-    conf.vm.synced_folder 'gitlab/data/.ssh',
-                          '/var/opt/gitlab/.ssh',
-                          create: true, mount_options: mount_option_dotssh, id: 'var_opt_gitlab_dotssh'
-    conf.vm.synced_folder 'gitlab/data/postgresql',
-                          '/var/opt/gitlab/postgresql',
-                          create: true, mount_options: mount_option_psql_root
+    # conf.vm.synced_folder 'gitlab/data/.ssh',
+    #                       '/var/opt/gitlab/.ssh',
+    #                       create: true, mount_options: mount_option_dotssh, id: 'var_opt_gitlab_dotssh'
+    # conf.vm.synced_folder 'gitlab/data/postgresql',
+    #                       '/var/opt/gitlab/postgresql',
+    #                       create: true, mount_options: mount_option_psql_root
+    # conf.vm.synced_folder 'gitlab/data/redis',
+    #                       '/var/opt/gitlab/redis',
+    #                       create: true, mount_options: mount_option_redis_git
   end
 
   # GitLab recommended specs
   config.vm.provider 'virtualbox' do |v|
     v.cpus = cpus
     v.memory = memory
-    #conf.disksize.size = '20GB'
+    #conf.disksize.size = '80GB'
+    #v.customize ["modifyvm", :id, "--vram", "9"]
     #v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/gitlab/logs", "1"]
   end
 
