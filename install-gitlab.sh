@@ -91,8 +91,9 @@ chmod 775 /etc/gitlab
 cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
 rewrite_hostname
 chown root:root /etc/gitlab/gitlab.rb
-chhmod 600 /etc/gitlab/gitlab.rb
-apt-get install -y ${GITLAB_PACKAGE}
+chmod 600 /etc/gitlab/gitlab.rb
+EXTERNAL_URL=$EXTERNAL_URL apt-get install -y ${GITLAB_PACKAGE}
+head -14 /etc/gitlab/gitlab.rb
 
 # fix the config and reconfigure
 #cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb

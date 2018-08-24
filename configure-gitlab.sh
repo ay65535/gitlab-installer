@@ -163,7 +163,7 @@ chmod 775 /etc/gitlab
 cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
 rewrite_hostname
 chown root:root /etc/gitlab/gitlab.rb
-chhmod 600 /etc/gitlab/gitlab.rb
+chmod 600 /etc/gitlab/gitlab.rb
 
 # done
 echo "Done!"

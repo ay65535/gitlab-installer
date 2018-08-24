@@ -1063,8 +1063,8 @@ logging['svlogd_size'] = 100 * 1024 * 1024 # rotate after 200 MB of log data
 ################################################################################
 
 ##! **Set only if the select directories are created manually**
-# manage_storage_directories['enable'] = false
-# manage_storage_directories['manage_etc'] = false
+manage_storage_directories['enable'] = false
+manage_storage_directories['manage_etc'] = false
 
 ################################################################################
 ## Runtime directory
@@ -1442,7 +1442,7 @@ logging['svlogd_size'] = 100 * 1024 * 1024 # rotate after 200 MB of log data
 ################################################################################
 # Let's Encrypt integration
 ################################################################################
-# letsencrypt['enable'] = nil
+letsencrypt['enable'] = false
 # letsencrypt['contact_emails'] = [] # This should be an array of email addresses to add as contacts
 # letsencrypt['group'] = 'root'
 # letsencrypt['key_size'] = 2048
