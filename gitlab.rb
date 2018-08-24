@@ -833,8 +833,8 @@ unicorn['worker_processes'] = 2
 ###!   one of the lines below (choose master or slave instance types).**
 ###! Docs: https://docs.gitlab.com/omnibus/settings/redis.html
 ###!       https://docs.gitlab.com/ce/administration/high_availability/redis.html
-redis_master_role['enable'] = true
-redis_slave_role['enable'] = false
+# redis_master_role['enable'] = true
+# redis_slave_role['enable'] = false
 
 ### Redis TCP support (will disable UNIX socket transport)
 # redis['bind'] = '0.0.0.0' # or specify an IP to bind to a single one

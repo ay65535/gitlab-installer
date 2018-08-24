@@ -80,8 +80,8 @@ Vagrant.configure('2') do |config|
     conf.vm.hostname = host
     # bento/ubuntu-16.04 provides boxes for virtualbox. vmware_desktop(fusion, workstation) and parallels
     conf.vm.box = 'bento/ubuntu-16.04'
-    conf.vm.provision 'localize', type: 'shell', path: 'localize.sh', env: envs
     conf.vm.provision 'configure', type: 'shell', path: 'configure-gitlab.sh', env: envs
+    conf.vm.provision 'localize', type: 'shell', path: 'localize.sh', env: envs
     conf.vm.provision 'install', type: 'shell', path: 'install-gitlab.sh', env: envs
 
     # On Linux, we cannot forward ports <1024

@@ -158,7 +158,12 @@ if ! dpkg -l ${GITLAB_PACKAGE}; then
     curl -s https://packages.gitlab.com/install/repositories/gitlab/${GITLAB_PACKAGE}/script.deb.sh | sudo bash
 fi
 test ! -d /etc/gitlab && mkdir -p /etc/gitlab
+chown root:root /etc/gitlab
+chmod 775 /etc/gitlab
 cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
+rewrite_hostname
+chown root:root /etc/gitlab/gitlab.rb
+chhmod 600 /etc/gitlab/gitlab.rb
 
 # done
 echo "Done!"
