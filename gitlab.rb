@@ -10,7 +10,7 @@
 ##! URL on which GitLab will be reachable.
 ##! For more details on configuring external_url see:
 ##! https://docs.gitlab.com/omnibus/settings/configuration.html#configuring-the-external-url-for-gitlab
-external_url 'GENERATED_EXTERNAL_URL'
+external_url 'https://gitlab.local/'
 
 ## Roles for multi-instance GitLab
 ##! The default is to have no roles enabled, which results in GitLab running as an all-in-one instance.
@@ -63,11 +63,11 @@ gitlab_rails['time_zone'] = 'Tokyo'
 # gitlab_rails['gitlab_default_theme'] = 2
 
 ### Default project feature settings
-# gitlab_rails['gitlab_default_projects_features_issues'] = true
-# gitlab_rails['gitlab_default_projects_features_merge_requests'] = true
-# gitlab_rails['gitlab_default_projects_features_wiki'] = true
-# gitlab_rails['gitlab_default_projects_features_snippets'] = true
-# gitlab_rails['gitlab_default_projects_features_builds'] = true
+gitlab_rails['gitlab_default_projects_features_issues'] = true
+gitlab_rails['gitlab_default_projects_features_merge_requests'] = true
+gitlab_rails['gitlab_default_projects_features_wiki'] = true
+gitlab_rails['gitlab_default_projects_features_snippets'] = true
+gitlab_rails['gitlab_default_projects_features_builds'] = true
 # gitlab_rails['gitlab_default_projects_features_container_registry'] = true
 
 ### Automatic issue closing
@@ -296,10 +296,10 @@ gitlab_rails['omniauth_enabled'] = false
 ###! Docs: https://docs.gitlab.com/omnibus/settings/backups.html
 
 # gitlab_rails['manage_backup_path'] = true
-# gitlab_rails['backup_path'] = "/var/opt/gitlab/backups"
+gitlab_rails['backup_path'] = "/var/opt/gitlab/backups"
 
 ###! Docs: https://docs.gitlab.com/ce/raketasks/backup_restore.html#backup-archive-permissions
-# gitlab_rails['backup_archive_permissions'] = 0644
+gitlab_rails['backup_archive_permissions'] = 0600
 
 # gitlab_rails['backup_pg_schema'] = 'public'
 
@@ -834,7 +834,7 @@ unicorn['worker_processes'] = 2
 ###! Docs: https://docs.gitlab.com/omnibus/settings/redis.html
 ###!       https://docs.gitlab.com/ce/administration/high_availability/redis.html
 # redis_master_role['enable'] = true
-# redis_slave_role['enable'] = false
+# redis_slave_role['enable'] = true
 
 ### Redis TCP support (will disable UNIX socket transport)
 # redis['bind'] = '0.0.0.0' # or specify an IP to bind to a single one
@@ -1014,11 +1014,11 @@ nginx['ssl_certificate_key'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
 ################################################################################
 
 logging['svlogd_size'] = 100 * 1024 * 1024 # rotate after 200 MB of log data
-# logging['svlogd_num'] = 30 # keep 30 rotated log files
-# logging['svlogd_timeout'] = 24 * 60 * 60 # rotate after 24 hours
-# logging['svlogd_filter'] = "gzip" # compress logs with gzip
-# logging['svlogd_udp'] = nil # transmit log messages via UDP
-# logging['svlogd_prefix'] = nil # custom prefix for log messages
+logging['svlogd_num'] = 30 # keep 30 rotated log files
+logging['svlogd_timeout'] = 24 * 60 * 60 # rotate after 24 hours
+logging['svlogd_filter'] = "gzip" # compress logs with gzip
+logging['svlogd_udp'] = nil # transmit log messages via UDP
+logging['svlogd_prefix'] = nil # custom prefix for log messages
 # logging['logrotate_frequency'] = "daily" # rotate logs daily
 # logging['logrotate_size'] = nil # do not rotate by size by default
 # logging['logrotate_rotate'] = 30 # keep 30 rotated logs
@@ -1063,8 +1063,8 @@ logging['svlogd_size'] = 100 * 1024 * 1024 # rotate after 200 MB of log data
 ################################################################################
 
 ##! **Set only if the select directories are created manually**
-manage_storage_directories['enable'] = false
-manage_storage_directories['manage_etc'] = false
+# manage_storage_directories['enable'] = false
+# manage_storage_directories['manage_etc'] = false
 
 ################################################################################
 ## Runtime directory

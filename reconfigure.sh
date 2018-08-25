@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) 2013-2016 Tuomo Tanskanen <tuomo@tanskanen.org>
+# Copyright (c) 2018 ay65535 <ay65535@icloud.com>
 
 # Usage: Copy 'gitlab.rb.example' as 'gitlab.rb', then 'vagrant up'.
 
@@ -15,8 +16,6 @@ GITLAB_PORT=${GITLAB_PORT:-8443}
 #  Installation - no need to touch!
 #  --------------------------------
 #
-
-export DEBIAN_FRONTEND=noninteractive
 
 fatal()
 {
@@ -41,9 +40,9 @@ check_for_gitlab_rb()
 
 set_gitlab_edition()
 {
-    if [[ $GITLAB_EDITION == "community" ]]; then
+    if [[ ${GITLAB_EDITION} == "community" ]]; then
         GITLAB_PACKAGE=gitlab-ce
-    elif [[ $GITLAB_EDITION == "enterprise" ]]; then
+    elif [[ ${GITLAB_EDITION} == "enterprise" ]]; then
         GITLAB_PACKAGE=gitlab-ee
     else
         fatal "\"${GITLAB_EDITION}\" is not a supported GitLab edition"
@@ -76,9 +75,6 @@ set_gitlab_edition
 check_for_gitlab_rb
 check_for_backwards_compatibility
 
-echo "Installing ${GITLAB_PACKAGE} via apt ..."
-apt-get install -y ${GITLAB_PACKAGE}
-
 if [[ ${GITLAB_PORT} == 80 ]]; then
     GITLAB_URL="http://${GITLAB_HOSTNAME}/"
 elif [[ ${GITLAB_PORT} == 443 ]]; then
@@ -87,17 +83,16 @@ else
     GITLAB_URL="https://${GITLAB_HOSTNAME}:${GITLAB_PORT}/"
 fi
 
-# fix the config and reconfigure
+if [[ ! -d /etc/gitlab ]]; then
+    mkdir -p /etc/gitlab
+    chown root:root /etc/gitlab
+    chmod 775 /etc/gitlab
+fi
 cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
 rewrite_hostname
 chown root:root /etc/gitlab/gitlab.rb
 chmod 600 /etc/gitlab/gitlab.rb
-head -14 /etc/gitlab/gitlab.rb
 gitlab-ctl reconfigure
-#EXTERNAL_URL=${GITLAB_URL} gitlab-ctl reconfigure
-head -14 /etc/gitlab/gitlab.rb
 
 # done
 echo "Done!"
-echo " Login at ${GITLAB_URL}, username 'root'. Password will be reset on first login."
-echo " Config found at /etc/gitlab/gitlab.rb and updated by 'sudo gitlab-ctl reconfigure'"

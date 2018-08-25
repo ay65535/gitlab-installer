@@ -115,11 +115,6 @@ change_vfs_cache_pressure()
     fi
 }
 
-rewrite_hostname()
-{
-    sed -i -e "s,^external_url.*,external_url 'https://${GITLAB_HOSTNAME}/'," /etc/gitlab/gitlab.rb
-}
-
 # All commands expect root access.
 check_for_root
 
@@ -157,13 +152,6 @@ set_apt_pdiff_off
 if ! dpkg -l ${GITLAB_PACKAGE}; then
     curl -s https://packages.gitlab.com/install/repositories/gitlab/${GITLAB_PACKAGE}/script.deb.sh | sudo bash
 fi
-test ! -d /etc/gitlab && mkdir -p /etc/gitlab
-chown root:root /etc/gitlab
-chmod 775 /etc/gitlab
-cp /vagrant/gitlab.rb /etc/gitlab/gitlab.rb
-rewrite_hostname
-chown root:root /etc/gitlab/gitlab.rb
-chmod 600 /etc/gitlab/gitlab.rb
 
 # done
 echo "Done!"
