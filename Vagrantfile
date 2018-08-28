@@ -89,7 +89,7 @@ Vagrant.configure('2') do |config|
     # We need to use higher ports, and have port forward or nginx proxy
     # or access the site via hostname:<port>, in this case 127.0.0.1:8080
     # By default, Gitlab is at https + port 8443
-    conf.vm.network :forwarded_port, guest: 443, host: port
+    conf.vm.network :forwarded_port, guest: port, host: port
     conf.vm.network 'private_network', type: 'dhcp' if private_network == '1'
 
     # use rsync for synced folder to avoid the need for provider tools

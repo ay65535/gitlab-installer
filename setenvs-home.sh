@@ -1,4 +1,6 @@
-set -ex; . ./setenvs-local.sh
+set -ex
+
+. ./setenvs-local.sh
 
 export GITLAB_CPUS=2  #1,2
 export GITLAB_PORT=443

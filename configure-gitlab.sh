@@ -9,7 +9,6 @@ set -ex
 # these are normally passed via Vagrantfile to environment
 # but if you run this on bare metal they need to be reset
 GITLAB_HOSTNAME=${GITLAB_HOSTNAME:-127.0.0.1}
-GITLAB_PORT=${GITLAB_PORT:-8443}
 APT_MIRROR=${APT_MIRROR:-http://ftp.jaist.ac.jp/pub/Linux/ubuntu/}
 GITLAB_SWAPPINESS=${GITLAB_SWAPPINESS:-60}
 GITLAB_CACHE_PRESSURE=${GITLAB_CACHE_PRESSURE:-100}

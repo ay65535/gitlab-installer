@@ -39,5 +39,3 @@ date
 
 # done
 echo "Done!"
-# echo " Login at https://${GITLAB_HOSTNAME}:${GITLAB_PORT}/, username 'root'. Password will be reset on first login."
-# echo " Config found at /etc/gitlab/gitlab.rb and updated by 'sudo gitlab-ctl reconfigure'"

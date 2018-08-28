@@ -8,4 +8,4 @@
 gitlab.rb.template
 gitlab.yml.example
 /gitlab/
-configure-local.*
+*-local.*
