@@ -4,7 +4,7 @@ Set-PSDebug -Trace 1 -Strict
 . .\SetEnvs-Local.ps1
 
 $env:GITLAB_CPUS = 2
-$env:GITLAB_MEMORY = 1749  # 1749,
+$env:GITLAB_MEMORY = 2048  # 1749,
 $env:http_proxy = $env:proxy
 $env:https_proxy = $env:proxy
 $env:no_proxy = 'localhost,127.0.0.1,.sock,.local'
