@@ -1,4 +1,5 @@
-$ErrorActionPreference = 'Stop'; Set-PSDebug -Strict -Trace 1
+$ErrorActionPreference = 'Stop'
+Set-PSDebug -Strict -Trace 1
 
 . .\SetEnvs.ps1
 . .\SetEnvs-Local.ps1

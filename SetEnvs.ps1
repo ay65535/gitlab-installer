@@ -1,4 +1,5 @@
-$ErrorActionPreference = 'Stop'; Set-PSDebug -Strict -Trace 1
+$ErrorActionPreference = 'Stop'
+Set-PSDebug -Strict -Trace 1
 
 $env:GITLAB_PORT = 80
 $env:GITLAB_SWAP = 8
