@@ -1,8 +1,13 @@
 #!/bin/bash
-
 set -eux
 
 vagrant destroy --force gitlab
-rm -rf ./gitlab
+if [[ -d ./gitlab ]]; then
+	rm -rf ./gitlab
+fi
 vagrant status
-rm -rf ./.vagrant
+if [[ -d ./.vagrant ]]; then
+	rm -rf ./.vagrant
+fi
+
+set +eux
