@@ -68,7 +68,7 @@ gitlab_rails['gitlab_default_projects_features_merge_requests'] = true
 gitlab_rails['gitlab_default_projects_features_wiki'] = true
 gitlab_rails['gitlab_default_projects_features_snippets'] = true
 gitlab_rails['gitlab_default_projects_features_builds'] = true
-# gitlab_rails['gitlab_default_projects_features_container_registry'] = true
+gitlab_rails['gitlab_default_projects_features_container_registry'] = false
 
 ### Automatic issue closing
 ###! See https://docs.gitlab.com/ce/customization/issue_closing.html for more
@@ -603,10 +603,10 @@ gitlab_rails['backup_keep_time'] = 259_200
 ##! Docs: https://docs.gitlab.com/omnibus/settings/configuration.html#changing-the-name-of-the-git-user-group
 ################################################################################
 
-# user['username'] = "git"
-# user['group'] = "git"
-# user['uid'] = nil
-# user['gid'] = nil
+user['username'] = "git"
+user['group'] = "git"
+user['uid'] = 997
+user['gid'] = 997
 
 ##! The shell for the git user
 # user['shell'] = "/bin/sh"
@@ -704,11 +704,11 @@ unicorn['worker_processes'] = 2
 # postgresql['ha'] = false
 # postgresql['dir'] = "/var/opt/gitlab/postgresql"
 # postgresql['log_directory'] = "/var/log/gitlab/postgresql"
-# postgresql['username'] = "gitlab-psql"
+postgresql['username'] = "gitlab-psql"
 ##! `SQL_USER_PASSWORD_HASH` can be generated using the command `gitlab-ctl pg-password-md5 gitlab`
 # postgresql['sql_user_password'] = 'SQL_USER_PASSWORD_HASH'
-# postgresql['uid'] = nil
-# postgresql['gid'] = nil
+postgresql['uid'] = 995
+postgresql['gid'] = 995
 # postgresql['shell'] = "/bin/sh"
 # postgresql['home'] = "/var/opt/gitlab/postgresql"
 # postgresql['user_path'] = "/opt/gitlab/embedded/bin:/opt/gitlab/bin:$PATH"
@@ -819,15 +819,16 @@ unicorn['worker_processes'] = 2
 ################################################################################
 
 # redis['enable'] = true
-# redis['username'] = "gitlab-redis"
+redis['username'] = "gitlab-redis"
 # redis['maxclients'] = "10000"
 # redis['maxmemory'] = "0"
 # redis['maxmemory_policy'] = "noeviction"
 # redis['maxmemory_samples'] = "5"
+# redis['tcp_backlog'] = 511
 # redis['tcp_timeout'] = "60"
 # redis['tcp_keepalive'] = "300"
-# redis['uid'] = nil
-# redis['gid'] = nil
+redis['uid'] = 996
+redis['gid'] = 996
 
 ###! **To enable only Redis service in this machine, uncomment
 ###!   one of the lines below (choose master or slave instance types).**
@@ -886,10 +887,10 @@ unicorn['worker_processes'] = 2
 ##! When bundled nginx is disabled we need to add the external webserver user to
 ##! the GitLab webserver group.
 # web_server['external_users'] = []
-# web_server['username'] = 'gitlab-www'
-# web_server['group'] = 'gitlab-www'
-# web_server['uid'] = nil
-# web_server['gid'] = nil
+web_server['username'] = 'gitlab-www'
+web_server['group'] = 'gitlab-www'
+web_server['uid'] = 998
+web_server['gid'] = 998
 # web_server['shell'] = '/bin/false'
 # web_server['home'] = '/var/opt/gitlab/nginx'
 
@@ -981,7 +982,7 @@ nginx['ssl_certificate_key'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
 # nginx['worker_processes'] = 4
 # nginx['worker_connections'] = 10240
 # nginx['log_format'] = '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'
-# nginx['sendfile'] = 'on'
+nginx['sendfile'] = 'off'
 # nginx['tcp_nopush'] = 'on'
 # nginx['tcp_nodelay'] = 'on'
 # nginx['gzip'] = "on"
@@ -1246,9 +1247,9 @@ logging['svlogd_prefix'] = nil # custom prefix for log messages
 
 # prometheus['enable'] = true
 # prometheus['monitor_kubernetes'] = true
-# prometheus['username'] = 'gitlab-prometheus'
-# prometheus['uid'] = nil
-# prometheus['gid'] = nil
+prometheus['username'] = 'gitlab-prometheus'
+prometheus['uid'] = 994
+prometheus['gid'] = 994
 # prometheus['shell'] = '/bin/sh'
 # prometheus['home'] = '/var/opt/gitlab/prometheus'
 # prometheus['log_directory'] = '/var/log/gitlab/prometheus'
@@ -1487,6 +1488,30 @@ letsencrypt['enable'] = false
 # gitlab_rails['kerberos_use_dedicated_port'] = true
 # gitlab_rails['kerberos_port'] = 8443
 # gitlab_rails['kerberos_https'] = true
+
+################################################################################
+## Package repository (EE Only)
+##! Docs: https://docs.gitlab.com/ee/administration/maven_packages.md
+################################################################################
+
+# gitlab_rails['packages_enabled'] = true
+# gitlab_rails['packages_storage_path'] = "/var/opt/gitlab/gitlab-rails/shared/packages"
+# gitlab_rails['packages_object_store_enabled'] = false
+# gitlab_rails['packages_object_store_direct_upload'] = false
+# gitlab_rails['packages_object_store_background_upload'] = true
+# gitlab_rails['packages_object_store_proxy_download'] = false
+# gitlab_rails['packages_object_store_remote_directory'] = "packages"
+# gitlab_rails['packages_object_store_connection'] = {
+#   'provider' => 'AWS',
+#   'region' => 'eu-west-1',
+#   'aws_access_key_id' => 'AWS_ACCESS_KEY_ID',
+#   'aws_secret_access_key' => 'AWS_SECRET_ACCESS_KEY',
+#   # # The below options configure an S3 compatible host instead of AWS
+#   # 'host' => 's3.amazonaws.com',
+#   # 'aws_signature_version' => 4 # For creation of signed URLs. Set to 2 if provider does not support v4.
+#   # 'endpoint' => 'https://s3.amazonaws.com' # default: nil - Useful for S3 compliant services such as DigitalOcean Spaces
+#   # 'path_style' => false # Use 'host/bucket_name/object' instead of 'bucket_name.host/object'
+# }
 
 ################################################################################
 ## GitLab Sentinel (EE Only)
