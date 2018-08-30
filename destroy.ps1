@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'; Set-PSDebug -Strict -Trace 1
 
 vagrant destroy --force gitlab
-if (Test-Path .\gitlab) {
+if (Test-Path .\gitlab\) {
     Remove-Item -Recurse -Force .\gitlab\
 }
 vagrant status

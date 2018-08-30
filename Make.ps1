@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'; Set-PSDebug -Strict -Trace 1
 
 .\Destroy.ps1
-. .\SetEnvs-Home.ps1
+. .\SetEnvs-Work.ps1
 vagrant up --no-provision
 vagrant reload --provision-with configure
 vagrant reload --provision-with localize
