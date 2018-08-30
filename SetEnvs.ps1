@@ -4,11 +4,11 @@ $env:GITLAB_PORT = 80
 $env:GITLAB_SWAP = 8
 $env:GITLAB_SWAPPINESS = 10
 $env:GITLAB_CACHE_PRESSURE = 50
-$env:GITLAB_PRIVATE_NETWORK = 0
-$env:GITLAB_HOST = ([System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties() | Select -First 1  | foreach { "{0}.{1}" -F $_.HostName,$_.DomainName }).Trim('.').ToLower()
+$env:GITLAB_PRIVATE_NETWORK = 1  # 1 for nfs
+$env:GITLAB_HOST = ([System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties() | Select-Object -First 1  | ForEach-Object { "{0}.{1}" -F $_.HostName,$_.DomainName }).Trim('.').ToLower()
 $env:GITLAB_HOSTNAME = $env:GITLAB_HOST
 $env:APT_MIRROR = 'http://ftp.jaist.ac.jp/pub/Linux/ubuntu/'
-$env:SMB_USER = (whoami).Split('\')[1]
+$env:SMB_USER = ${env:USERNAME}
 #$env:VAGRANT_DETECTED_OS = 'mingw'
 
 if (!(Test-Path .\gitlab.rb.template)) {
