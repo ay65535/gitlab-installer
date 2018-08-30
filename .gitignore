@@ -9,3 +9,4 @@ gitlab.rb.template
 gitlab.yml.example
 /gitlab/
 *-local.*
+/ignores/
