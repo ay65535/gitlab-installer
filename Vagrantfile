@@ -107,7 +107,6 @@ Vagrant.configure('2') do |config|
                           mount_options: %w[uid=997 gid=997 dmode=700 fmode=600]
     conf.vm.synced_folder 'gitlab/nfstest', '/nfstest', create: true, type: 'nfs',
                           nfs_export: true, nfs_udp: true
-                          #mount_options: %w[dmode=755 fmode=644]
     # //10.x.x.x/vgt-xxxx-xxxx on /var/opt/gitlab type cifs (rw,relatime,vers=2.0,sec=ntlmssp,cache=strict,username=xxx,domain=xxx,uid=1000,forceuid,gid=1000,forcegid,addr=10.x.x.x,file_mode=0777,dir_mode=0777,nounix,serverino,mapposix,rsize=65536,wsize=65536,echo_interval=60,actimeo=1)
     # etc_gitlab on /etc/gitlab type vboxsf (rw,nodev,relatime)
     # var_log_gitlab on /var/log/gitlab type vboxsf (rw,nodev,relatime)
