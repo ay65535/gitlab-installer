@@ -5,7 +5,7 @@ Set-PSDebug -Strict -Trace 1
 . .\SetEnvs-Work.ps1
 $Pattern = 'proxy|EXTERNAL_URL|^(VAGRANT|GITLAB|MINGW|MSYS|CYG|SMB_USER|APT|EXTERNAL)'
 Get-ChildItem env:\ | Where-Object {$_.Key -imatch "$Pattern"}
-Pause
+Pause; $ErrorActionPreference = 'Stop'; Set-PSDebug -Strict -Trace 1
 vagrant up --no-provision
 vagrant reload --provision-with configure
 vagrant reload --provision-with localize

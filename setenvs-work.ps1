@@ -1,11 +1,11 @@
 $ErrorActionPreference = 'Stop'
 Set-PSDebug -Strict -Trace 1
 
-. .\SetEnvs.ps1
+. .\SetEnvs.ps1; $ErrorActionPreference = 'Stop'; Set-PSDebug -Strict -Trace 1
 . .\SetEnvs-Local.ps1
 
 $env:GITLAB_CPUS = 2
-$env:GITLAB_MEMORY = 2798  # 1749,2798
+$env:GITLAB_MEMORY = 2048  # 1749,2798
 $env:http_proxy = $env:proxy
 $env:https_proxy = $env:proxy
 $env:no_proxy = 'localhost,127.0.0.1,.sock,.local'
