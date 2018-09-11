@@ -101,7 +101,7 @@ gitlab_rails['gitlab_default_projects_features_container_registry'] = false
 ### Webhook Settings
 ###! Number of seconds to wait for HTTP response after sending webhook HTTP POST
 ###! request (default: 10)
-gitlab_rails['webhook_timeout'] = 20
+#!gitlab_rails['webhook_timeout'] = 20
 
 ### Trusted proxies
 ###! Customize if you have GitLab behind a reverse proxy which is running on a
@@ -623,10 +623,10 @@ user['gid'] = 997
 ##! Docs: https://docs.gitlab.com/omnibus/settings/unicorn.html
 ################################################################################
 
-unicorn['worker_timeout'] = 120
+#!unicorn['worker_timeout'] = 120
 ###! Minimum worker_processes is 2 at this moment
 ###! See https://gitlab.com/gitlab-org/gitlab-ce/issues/18771
-unicorn['worker_processes'] = 2
+#!unicorn['worker_processes'] = 2
 
 ### Advanced settings
 # unicorn['listen'] = 'localhost'

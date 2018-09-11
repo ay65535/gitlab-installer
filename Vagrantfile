@@ -62,8 +62,8 @@ Vagrant.configure('2') do |config|
   config.cache.scope = :box if Vagrant.has_plugin?('vagrant-cachier')
 
   config.vm.define :gitlab do |conf|
-    required_plugins = %w[vagrant-vbguest vagrant-cachier vagrant-winnfsd vagrant-proxyconf]
-    #required_plugins = %w[vagrant-global-status vagrant-vbguest vagrant-cachier vagrant-proxyconf vagrant-disksize]
+    required_plugins = %w[vagrant-vbguest vagrant-cachier vagrant-proxyconf]
+    #required_plugins = %w[vagrant-global-status vagrant-vbguest vagrant-cachier vagrant-proxyconf vagrant-winnfsd vagrant-disksize]
     need_retry = false
     required_plugins.each do |plugin|
      unless Vagrant.has_plugin? plugin
@@ -104,9 +104,9 @@ Vagrant.configure('2') do |config|
     # conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, type: 'smb', smb_username: smb_user, smb_password: smb_pass,
     #                       mount_options: mount_option_everyone
     conf.vm.synced_folder 'gitlab/data/backups', '/var/opt/gitlab/backups', create: true,
-                          mount_options: %w[uid=997 gid=997 dmode=700 fmode=600]
-    conf.vm.synced_folder 'gitlab/nfstest', '/nfstest', create: true, type: 'nfs',
-                          nfs_export: true, nfs_udp: true
+                          mount_options: %w[uid=0 gid=0 dmode=700 fmode=600]
+    # conf.vm.synced_folder 'gitlab/nfstest', '/nfstest', create: true, type: 'nfs',
+    #                       nfs_export: true, nfs_udp: true
     # //10.x.x.x/vgt-xxxx-xxxx on /var/opt/gitlab type cifs (rw,relatime,vers=2.0,sec=ntlmssp,cache=strict,username=xxx,domain=xxx,uid=1000,forceuid,gid=1000,forcegid,addr=10.x.x.x,file_mode=0777,dir_mode=0777,nounix,serverino,mapposix,rsize=65536,wsize=65536,echo_interval=60,actimeo=1)
     # etc_gitlab on /etc/gitlab type vboxsf (rw,nodev,relatime)
     # var_log_gitlab on /var/log/gitlab type vboxsf (rw,nodev,relatime)
