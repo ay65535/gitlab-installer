@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 Set-PSDebug -Strict -Trace 1
 
-$env:GITLAB_PORT = 80
+$env:GITLAB_PORT = 443
 $env:GITLAB_SWAP = 8
 $env:GITLAB_SWAPPINESS = 10
 $env:GITLAB_CACHE_PRESSURE = 50
