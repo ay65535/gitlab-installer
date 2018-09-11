@@ -1,6 +1,9 @@
 $ErrorActionPreference = 'Stop'
 Set-PSDebug -Strict -Trace 1
 
+Remove-Item Env:\*GITLAB_*
+Remove-Item Env:\SMB_*
+Remove-Item Env:\APT_*
 . .\SetEnvs-Local.ps1; $ErrorActionPreference = 'Stop'; Set-PSDebug -Strict -Trace 1
 . .\SetEnvs.ps1; $ErrorActionPreference = 'Stop'; Set-PSDebug -Strict -Trace 1
 
