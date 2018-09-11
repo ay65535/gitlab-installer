@@ -7,56 +7,166 @@ memory = ENV['GITLAB_MEMORY'] || 3072
 cpus = ENV['GITLAB_CPUS'] || 2
 port = ENV['GITLAB_PORT'] || 8443
 swap = ENV['GITLAB_SWAP'] || 0
-host = ENV['GITLAB_HOST'] || "gitlab.local"
-edition = ENV['GITLAB_EDITION'] || "community"
+host = ENV['GITLAB_HOST'] || 'gitlab.local'
+edition = ENV['GITLAB_EDITION'] || 'community'
 private_network = ENV['GITLAB_PRIVATE_NETWORK'] || 0
+proxy = ENV['http_proxy'] || nil
+noproxy = ENV['no_proxy'] || nil
+smb_user = ENV['SMB_USER'] || nil
+smb_pass = ENV['SMB_PASS'] || nil
+envs = {
+  GITLAB_SWAP: swap,
+  GITLAB_HOSTNAME: host,
+  GITLAB_PORT: port,
+  GITLAB_EDITION: edition,
+  http_proxy: proxy,
+  HTTP_PROXY: proxy,
+  https_proxy: proxy,
+  HTTPS_PROXY: proxy,
+  no_proxy: noproxy,
+  NO_PROXY: noproxy
+}
 
-Vagrant.require_version ">= 1.8.0"
+# for /var/opt/gitlab/git-data
+mount_option_gitdata = %w[dmode=0700 fmode=0644 uid=997 gid=0]
+# for /var/opt/gitlab/git-data/repositories
+mount_option_gitdata_repositories = %w[dmode=2770 fmode=0644 uid=997 gid=997 suid]
+# for /var/opt/gitlab/gitlab-rails/shared
+mount_option_gitlabrails_shared = %w[dmode=0751 uid=997 gid=998]
+# for /var/opt/gitlab/gitlab-rails/shared/artifacts
+mount_option_gitlabrails_shared_artifacts = %w[dmode=0700 uid=997 gid=0]
+# for /var/opt/gitlab/gitlab-rails/shared/lfs-objects
+mount_option_gitlabrails_shared_lfsobjects = %w[dmode=0700 uid=997 gid=0]
+# for /var/opt/gitlab/gitlab-rails/uploads
+mount_option_gitlabrails_uploads = %w[dmode=0700 uid=997 gid=0]
+# for /var/opt/gitlab/gitlab-rails/shared/pages
+mount_option_gitlabrails_shared_pages = %w[dmode=0750 uid=997 gid=998]
+# for /var/opt/gitlab/gitlab-ci/builds
+mount_option_gitlabci_builds = %w[dmode=0700 uid=997 gid=0]
+# for /var/opt/gitlab/.ssh
+mount_option_dotssh = %w[dmode=0777 fmode=666 uid=997 gid=997]
+#mount_option_dotssh = %w[dmode=0700 fmode=600 uid=997 gid=997]
 
-Vagrant.configure("2") do |config|
+mount_option_prom_root = %w[uid=994 gid=0 dmode=755 fmode=644]
+mount_option_root_root = %w[uid=0 gid=0 dmode=755 fmode=644]
+mount_option_git_www = %w[uid=997 gid=998 dmode=755 fmode=644]
+mount_option_root_www = %w[uid=0 gid=998 dmode=755 fmode=644]
+mount_option_psql_root = %w[uid=995 gid=0 dmode=0755 fmode=0644]
+mount_option_redis_git = %w[uid=996 gid=997 dmode=750 fmode=640]
+mount_option_everyone = %w[uid=1000 gid=1000 dmode=0777 fmode=0777]
+mount_option_everyone_smb = %w[uid=1000 gid=1000 dir_mode=0777 file_mode=0777]
 
-  config.vm.define :gitlab do |config|
+Vagrant.require_version '>= 1.8.0'
+
+Vagrant.configure('2') do |config|
+  config.cache.scope = :box if Vagrant.has_plugin?('vagrant-cachier')
+
+  config.vm.define :gitlab do |conf|
+    required_plugins = %w[vagrant-vbguest vagrant-cachier vagrant-proxyconf]
+    #required_plugins = %w[vagrant-global-status vagrant-vbguest vagrant-cachier vagrant-proxyconf vagrant-winnfsd vagrant-disksize]
+    need_retry = false
+    required_plugins.each do |plugin|
+      unless Vagrant.has_plugin? plugin
+        system "vagrant plugin install #{plugin}"
+        need_retry = true
+      end
+    end
+    exec 'vagrant ' + ARGV.join(' ') if need_retry
+    # conf.winnfsd.logging = 'on'
+    # conf.winnfsd.uid = 997
+    # conf.winnfsd.gid = 997
+    conf.proxy.http = proxy
+    conf.proxy.https = proxy
+    conf.proxy.no_proxy = noproxy
+
     # Configure some hostname here
-    config.vm.hostname = host
-	# bento/ubuntu-16.04 provides boxes for virtualbox. vmware_desktop(fusion, workstation) and parallels
-    config.vm.box = "bento/ubuntu-16.04"
-    config.vm.provision :shell, :path => "install-gitlab.sh",
-      env: { "GITLAB_SWAP" => swap, "GITLAB_HOSTNAME" => host, "GITLAB_PORT" => port, "GITLAB_EDITION" => edition }
+    conf.vm.hostname = host
+    # bento/ubuntu-16.04 provides boxes for virtualbox. vmware_desktop(fusion, workstation) and parallels
+    conf.vm.box = 'bento/ubuntu-16.04'
+    conf.vm.provision 'configure', type: 'shell', path: 'configure-gitlab.sh', env: envs
+    conf.vm.provision 'localize', type: 'shell', path: 'localize.sh', env: envs
+    conf.vm.provision 'install', type: 'shell', path: 'install-gitlab.sh', env: envs
+    conf.vm.provision 'reconfigure', type: 'shell', path: 'reconfigure-gitlab.sh', env: envs
 
     # On Linux, we cannot forward ports <1024
     # We need to use higher ports, and have port forward or nginx proxy
     # or access the site via hostname:<port>, in this case 127.0.0.1:8080
     # By default, Gitlab is at https + port 8443
-    config.vm.network :forwarded_port, guest: 443, host: port
-    config.vm.network "private_network", type: "dhcp" if private_network == '1'
+    conf.vm.network :forwarded_port, guest: port, host: port
+    conf.vm.network 'private_network', type: 'dhcp' if private_network == '1'
 
     # use rsync for synced folder to avoid the need for provider tools
-	# added rsync__auto  to enable detect changes on host and sync to guest machine and exclude .git/
-    config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/", rsync__auto: true
+    # added rsync__auto  to enable detect changes on host and sync to guest machine and exclude .git/
+    conf.vm.synced_folder '.', '/vagrant', type: 'rsync', rsync__exclude: %w[.git/ gitlab/], rsync__auto: true
+    # conf.vm.synced_folder 'gitlab/conf', '/etc/gitlab', create: true
+    # conf.vm.synced_folder 'gitlab/logs', '/var/log/gitlab', create: true, type: 'rsync', rsync__auto: true
+    # conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, mount_options: mount_option_everyone
+    # conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, type: 'smb', smb_username: smb_user, smb_password: smb_pass,
+    #                       mount_options: mount_option_everyone
+    conf.vm.synced_folder 'gitlab/data/backups', '/var/opt/gitlab/backups', create: true,
+                          mount_options: %w[uid=0 gid=0 dmode=700 fmode=600]
+    # conf.vm.synced_folder 'gitlab/nfstest', '/nfstest', create: true, type: 'nfs',
+    #                       linux__nfs_options: %w[rw async wdelay no_root_squash anonuid=997 anongid=997]
+    conf.vm.synced_folder 'gitlab/secret', '/secret/gitlab/backups', create: true,
+                          mount_options: %w[uid=997 gid=997 dmode=700 fmode=600]
+                          # type: 'nfs', linux__nfs_options: %w[rw async wdelay no_root_squash anonuid=997 anongid=997]
+    # //10.x.x.x/vgt-xxxx-xxxx on /var/opt/gitlab type cifs (rw,relatime,vers=2.0,sec=ntlmssp,cache=strict,username=xxx,domain=xxx,uid=1000,forceuid,gid=1000,forcegid,addr=10.x.x.x,file_mode=0777,dir_mode=0777,nounix,serverino,mapposix,rsize=65536,wsize=65536,echo_interval=60,actimeo=1)
+    # etc_gitlab on /etc/gitlab type vboxsf (rw,nodev,relatime)
+    # var_log_gitlab on /var/log/gitlab type vboxsf (rw,nodev,relatime)
+    # vagrant-cache on /tmp/vagrant-cache type vboxsf (rw,nodev,relatime)
+
+    # conf.vm.synced_folder 'gitlab/data/git-data',
+    #                       '/var/opt/gitlab/git-data', create: true, mount_options: mount_option_gitdata
+    # conf.vm.synced_folder 'gitlab/data/git-data/repositories',
+    #                       '/var/opt/gitlab/git-data/repositories', create: true, mount_options: mount_option_gitdata_repositories
+    # conf.vm.synced_folder 'gitlab/data/gitlab-rails/shared',
+    #                       '/var/opt/gitlab/gitlab-rails/shared', create: true, mount_options: mount_option_gitlabrails_shared
+    # conf.vm.synced_folder 'gitlab/data/gitlab-rails/shared/artifacts',
+    #                       '/var/opt/gitlab/gitlab-rails/shared/artifacts', create: true, mount_options: mount_option_gitlabrails_shared_artifacts
+    # conf.vm.synced_folder 'gitlab/data/gitlab-rails/shared/lfs-objects',
+    #                       '/var/opt/gitlab/gitlab-rails/shared/lfs-objects', create: true, mount_options: mount_option_gitlabrails_shared_lfsobjects
+    # conf.vm.synced_folder 'gitlab/data/gitlab-rails/uploads',
+    #                       '/var/opt/gitlab/gitlab-rails/uploads', create: true, mount_options: mount_option_gitlabrails_uploads
+    # conf.vm.synced_folder 'gitlab/data/gitlab-rails/shared/pages',
+    #                       '/var/opt/gitlab/gitlab-rails/shared/pages', create: true, mount_options: mount_option_gitlabrails_shared_pages
+    # conf.vm.synced_folder 'gitlab/data/gitlab-ci/builds',
+    #                       '/var/opt/gitlab/gitlab-ci/builds', create: true, mount_options: mount_option_gitlabci_builds
+    # conf.vm.synced_folder 'gitlab/data/.ssh',
+    #                       '/var/opt/gitlab/.ssh',
+    #                       create: true, mount_options: mount_option_dotssh, id: 'var_opt_gitlab_dotssh'
+    # conf.vm.synced_folder 'gitlab/data/postgresql',
+    #                       '/var/opt/gitlab/postgresql',
+    #                       create: true, mount_options: mount_option_psql_root
+    # conf.vm.synced_folder 'gitlab/data/redis',
+    #                       '/var/opt/gitlab/redis',
+    #                       create: true, mount_options: mount_option_redis_git
   end
 
   # GitLab recommended specs
-  config.vm.provider "virtualbox" do |v|
+  config.vm.provider 'virtualbox' do |v|
     v.cpus = cpus
     v.memory = memory
+    #conf.disksize.size = '80GB'
+    #v.customize ["modifyvm", :id, "--vram", "9"]
+    #v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/gitlab/logs", "1"]
   end
-  
+
   # vmware Workstation and Fusion Provider this will work for both vmware versions as the virtual machines
-  # images are identical is a fuzzy term which will allow both to work effecively for ether Fusion for the
+  # images are identical is a fuzzy term which will allow both to work effectively for ether Fusion for the
   # Mac or Workstation for the PC. It only matters which provider is specified on vagrant up command
   # (--provider=vmware_fusion or --provider=vmware_workstation)
-  # vmware provieder requires hashicorp license https://www.vagrantup.com/vmware/index.html
-  config.vm.provider "vmware_desktop" do |v|
-	v.vmx["memsize"] = "#{memory}"
-	v.vmx["numvcpus"] = "#{cpus}"
+  # vmware provider requires hashicorp license https://www.vagrantup.com/vmware/index.html
+  config.vm.provider 'vmware_desktop' do |v|
+    v.vmx['memsize'] = memory.to_s
+    v.vmx['numvcpus'] = cpus.to_s
   end
-  
-  config.vm.provider "parallels" do |v|
+
+  config.vm.provider 'parallels' do |v|
     v.cpus = cpus
     v.memory = memory
   end
 
-  config.vm.provider "lxc" do |v, override|
-    override.vm.box = "developerinlondon/ubuntu_lxc_xenial_x64"
+  config.vm.provider 'lxc' do |_v, override|
+    override.vm.box = 'developerinlondon/ubuntu_lxc_xenial_x64'
   end
 end

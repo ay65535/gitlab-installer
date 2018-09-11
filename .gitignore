@@ -1,4 +1,13 @@
-/.vagrant
-/gitlab.rb
+.DS_Store
+.idea/
+.vscode/
+
+/.vagrant/
+#/gitlab.rb
 /*.log
 
+gitlab.rb.template
+gitlab.yml.example
+/gitlab/
+*-local.*
+/ignores/

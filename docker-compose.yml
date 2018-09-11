@@ -1,0 +1,9 @@
+version: '3'
+services:
+  gitlab:
+    image: "ubuntu:16.04"
+    build: .
+    ports:
+      - "2222:22"
+      - "443:443"
+    tty: true
