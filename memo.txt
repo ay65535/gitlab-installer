@@ -1,0 +1,12 @@
+A host only network interface you're attempting to configure via DHCP
+already has a conflicting host only adapter with DHCP enabled. The
+DHCP on this adapter is incompatible with the DHCP settings. Two
+host only network interfaces are not allowed to overlap, and each
+host only network interface can have only one DHCP server. Please
+reconfigure your host only network or remove the virtual machine
+using the other host only network.
+
+VBoxManage list dhcpservers
+VBoxManage dhcpserver remove --netname "HostInterfaceNetworking-VirtualBox Host-Only Ethernet Adapter #2"
+VBoxManage dhcpserver remove --netname "HostInterfaceNetworking-VirtualBox Host-Only Ethernet Adapter"
+VBoxManage dhcpserver remove --netname HostInterfaceNetworking-vboxnet0

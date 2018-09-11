@@ -62,17 +62,17 @@ Vagrant.configure('2') do |config|
   config.cache.scope = :box if Vagrant.has_plugin?('vagrant-cachier')
 
   config.vm.define :gitlab do |conf|
-    required_plugins = %w[vagrant-vbguest vagrant-cachier vagrant-winnfsd vagrant-proxyconf]
-    #required_plugins = %w[vagrant-global-status vagrant-vbguest vagrant-cachier vagrant-proxyconf vagrant-disksize]
+    required_plugins = %w[vagrant-vbguest vagrant-cachier vagrant-proxyconf]
+    #required_plugins = %w[vagrant-global-status vagrant-vbguest vagrant-cachier vagrant-proxyconf vagrant-winnfsd vagrant-disksize]
     need_retry = false
     required_plugins.each do |plugin|
-     unless Vagrant.has_plugin? plugin
-       system "vagrant plugin install #{plugin}"
-       need_retry = true
-     end
+      unless Vagrant.has_plugin? plugin
+        system "vagrant plugin install #{plugin}"
+        need_retry = true
+      end
     end
     exec 'vagrant ' + ARGV.join(' ') if need_retry
-    #conf.winnfsd.logging = on
+    # conf.winnfsd.logging = 'on'
     # conf.winnfsd.uid = 997
     # conf.winnfsd.gid = 997
     conf.proxy.http = proxy
@@ -86,7 +86,7 @@ Vagrant.configure('2') do |config|
     conf.vm.provision 'configure', type: 'shell', path: 'configure-gitlab.sh', env: envs
     conf.vm.provision 'localize', type: 'shell', path: 'localize.sh', env: envs
     conf.vm.provision 'install', type: 'shell', path: 'install-gitlab.sh', env: envs
-    conf.vm.provision 'reconfigure', type: 'shell', path: 'reconfigure.sh', env: envs
+    conf.vm.provision 'reconfigure', type: 'shell', path: 'reconfigure-gitlab.sh', env: envs
 
     # On Linux, we cannot forward ports <1024
     # We need to use higher ports, and have port forward or nginx proxy
@@ -104,10 +104,12 @@ Vagrant.configure('2') do |config|
     # conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, type: 'smb', smb_username: smb_user, smb_password: smb_pass,
     #                       mount_options: mount_option_everyone
     conf.vm.synced_folder 'gitlab/data/backups', '/var/opt/gitlab/backups', create: true,
+                          mount_options: %w[uid=0 gid=0 dmode=700 fmode=600]
+    # conf.vm.synced_folder 'gitlab/nfstest', '/nfstest', create: true, type: 'nfs',
+    #                       linux__nfs_options: %w[rw async wdelay no_root_squash anonuid=997 anongid=997]
+    conf.vm.synced_folder 'gitlab/secret', '/secret/gitlab/backups', create: true,
                           mount_options: %w[uid=997 gid=997 dmode=700 fmode=600]
-    conf.vm.synced_folder 'gitlab/nfstest', '/nfstest', create: true, type: 'nfs',
-                          nfs_export: true, nfs_udp: true
-                          #mount_options: %w[dmode=755 fmode=644]
+                          # type: 'nfs', linux__nfs_options: %w[rw async wdelay no_root_squash anonuid=997 anongid=997]
     # //10.x.x.x/vgt-xxxx-xxxx on /var/opt/gitlab type cifs (rw,relatime,vers=2.0,sec=ntlmssp,cache=strict,username=xxx,domain=xxx,uid=1000,forceuid,gid=1000,forcegid,addr=10.x.x.x,file_mode=0777,dir_mode=0777,nounix,serverino,mapposix,rsize=65536,wsize=65536,echo_interval=60,actimeo=1)
     # etc_gitlab on /etc/gitlab type vboxsf (rw,nodev,relatime)
     # var_log_gitlab on /var/log/gitlab type vboxsf (rw,nodev,relatime)

@@ -1,12 +1,14 @@
 $ErrorActionPreference = 'Stop'
 Set-PSDebug -Strict -Trace 1
 
-$env:GITLAB_PORT = 80
+$env:GITLAB_PORT = 443
 $env:GITLAB_SWAP = 8
 $env:GITLAB_SWAPPINESS = 10
 $env:GITLAB_CACHE_PRESSURE = 50
 $env:GITLAB_PRIVATE_NETWORK = 1  # 1 for nfs
-$env:GITLAB_HOST = ([System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties() | Select-Object -First 1  | ForEach-Object { "{0}.{1}" -F $_.HostName,$_.DomainName }).Trim('.').ToLower()
+if (!($env:GITLAB_HOST)) {
+    $env:GITLAB_HOST = ([System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties() | Select-Object -First 1  | ForEach-Object { "{0}.{1}" -F $_.HostName,$_.DomainName }).Trim('.').ToLower() + '.local'
+}
 $env:GITLAB_HOSTNAME = $env:GITLAB_HOST
 $env:APT_MIRROR = 'http://ftp.jaist.ac.jp/pub/Linux/ubuntu/'
 $env:SMB_USER = ${env:USERNAME}
