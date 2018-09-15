@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eux
 
-unset GITLAB_*
-unset SMB_*
-unset APT*
+unset GITLAB_SWAPPINESS GITLAB_SWAP GITLAB_PRIVATE_NETWORK GITLAB_PORT GITLAB_MEMORY GITLAB_HOSTNAME GITLAB_HOST GITLAB_CPUS GITLAB_CACHE_PRESSURE
+unset SMB_USER SMB_PASS
+unset APT_MIRROR
 . ./setenvs-local.sh; set -eux
 . ./setenvs.sh; set -eux
 

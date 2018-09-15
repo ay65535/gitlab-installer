@@ -104,7 +104,7 @@ Vagrant.configure('2') do |config|
     # conf.vm.synced_folder 'gitlab/data', '/var/opt/gitlab', create: true, type: 'smb', smb_username: smb_user, smb_password: smb_pass,
     #                       mount_options: mount_option_everyone
     conf.vm.synced_folder 'gitlab/data/backups', '/var/opt/gitlab/backups', create: true,
-                          mount_options: %w[uid=0 gid=0 dmode=700 fmode=600]
+                          mount_options: %w[uid=997 gid=997 dmode=700 fmode=600]
     # conf.vm.synced_folder 'gitlab/nfstest', '/nfstest', create: true, type: 'nfs',
     #                       linux__nfs_options: %w[rw async wdelay no_root_squash anonuid=997 anongid=997]
     conf.vm.synced_folder 'gitlab/secret', '/secret/gitlab/backups', create: true,

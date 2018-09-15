@@ -6,9 +6,7 @@ export GITLAB_SWAP=2
 export GITLAB_SWAPPINESS=10
 export GITLAB_CACHE_PRESSURE=50
 export GITLAB_PRIVATE_NETWORK=1  # 1 for nfs
-if [[ -z "$GITLAB_HOST" ]]; then
-    export GITLAB_HOST=`hostname`
-fi
+export GITLAB_HOST=${GITLAB_HOST:-`hostname`}
 export GITLAB_HOSTNAME=$GITLAB_HOST
 export APT_MIRROR='http://ftp.jaist.ac.jp/pub/Linux/ubuntu/'
 case "$OSTYPE" in
