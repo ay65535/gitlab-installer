@@ -66,6 +66,13 @@ rewrite_hostname()
     sed -i -e "s,^external_url.*,external_url '${GITLAB_URL}'," /etc/gitlab/gitlab.rb
 }
 
+schedule_cron()
+{
+    chown root:root /vagrant/crontab
+    chmod 600 /vagrant/crontab
+    crontab -u root /vagrant/crontab
+}
+
 # All commands expect root access.
 check_for_root
 
@@ -96,6 +103,8 @@ head -14 /etc/gitlab/gitlab.rb
 gitlab-ctl reconfigure
 #EXTERNAL_URL=${GITLAB_URL} gitlab-ctl reconfigure
 head -14 /etc/gitlab/gitlab.rb
+schedule_cron
+crontab -u root -l
 
 # done
 echo "Done!"
