@@ -2,14 +2,19 @@
 set -eux
 
 export GITLAB_PORT=80
-export GITLAB_SWAP=8
+export GITLAB_SWAP=2
 export GITLAB_SWAPPINESS=10
 export GITLAB_CACHE_PRESSURE=50
 export GITLAB_PRIVATE_NETWORK=1  # 1 for nfs
-export GITLAB_HOST=`hostname`
+if [[ -z "$GITLAB_HOST" ]]; then
+    export GITLAB_HOST=`hostname`
+fi
 export GITLAB_HOSTNAME=$GITLAB_HOST
 export APT_MIRROR='http://ftp.jaist.ac.jp/pub/Linux/ubuntu/'
-export SMB_USER=${USERNAME}
+case "$OSTYPE" in
+    darwin*|linux*) export SMB_USER=${USER} ;;
+                 *) export SMB_USER=${USERNAME} ;;
+esac
 #export VAGRANT_DETECTED_OS='mingw'
 
 if [ ! -e ./gitlab.rb.template ]; then

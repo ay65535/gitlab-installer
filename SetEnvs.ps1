@@ -11,9 +11,12 @@ if (!($env:GITLAB_HOST)) {
 }
 $env:GITLAB_HOSTNAME = $env:GITLAB_HOST
 $env:APT_MIRROR = 'http://ftp.jaist.ac.jp/pub/Linux/ubuntu/'
-$env:SMB_USER = ${env:USERNAME}
+if ($PSVersionTable.Platform -eq 'Darwin') {
+    $env:SMB_USER = ${env:USER}
+} else {
+    $env:SMB_USER = ${env:USERNAME}
+}
 #$env:VAGRANT_DETECTED_OS = 'mingw'
-
 if (!(Test-Path .\gitlab.rb.template)) {
     Invoke-WebRequest 'https://gitlab.com/gitlab-org/omnibus-gitlab/raw/master/files/gitlab-config-template/gitlab.rb.template' -OutFile 'gitlab.rb.template'
 }

@@ -63,21 +63,22 @@ gitlab_rails['time_zone'] = 'Tokyo'
 # gitlab_rails['gitlab_default_theme'] = 2
 
 ### Default project feature settings
-gitlab_rails['gitlab_default_projects_features_issues'] = true
-gitlab_rails['gitlab_default_projects_features_merge_requests'] = true
-gitlab_rails['gitlab_default_projects_features_wiki'] = true
-gitlab_rails['gitlab_default_projects_features_snippets'] = true
-gitlab_rails['gitlab_default_projects_features_builds'] = true
-gitlab_rails['gitlab_default_projects_features_container_registry'] = false
+# gitlab_rails['gitlab_default_projects_features_issues'] = true
+# gitlab_rails['gitlab_default_projects_features_merge_requests'] = true
+# gitlab_rails['gitlab_default_projects_features_wiki'] = true
+# gitlab_rails['gitlab_default_projects_features_snippets'] = true
+# gitlab_rails['gitlab_default_projects_features_builds'] = true
+# gitlab_rails['gitlab_default_projects_features_container_registry'] = true
 
 ### Automatic issue closing
 ###! See https://docs.gitlab.com/ce/customization/issue_closing.html for more
 ###! information about this pattern.
-# gitlab_rails['gitlab_issue_closing_pattern'] = "((?:[Cc]los(?:e[sd]?|ing)|[Ff]ix(?:e[sd]|ing)?|[Rr]esolv(?:e[sd]?|ing)|[Ii]mplement(?:s|ed|ing)?)(:?) +(?:(?:issues? +)?%{issue_ref}(?:(?:, *| +and +)?)|([A-Z][A-Z0-9_]+-\d+))+)"
+# gitlab_rails['gitlab_issue_closing_pattern'] = "\b((?:[Cc]los(?:e[sd]?|ing)|\b[Ff]ix(?:e[sd]|ing)?|\b[Rr]esolv(?:e[sd]?|ing)|\b[Ii]mplement(?:s|ed|ing)?)(:?) +(?:(?:issues? +)?%{issue_ref}(?:(?:, *| +and +)?)|([A-Z][A-Z0-9_]+-\d+))+)"
 
 ### Download location
 ###! When a user clicks e.g. 'Download zip' on a project, a temporary zip file
 ###! is created in the following directory.
+###! Should not be the same path, or a sub directory of any of the `git_data_dirs`
 # gitlab_rails['gitlab_repository_downloads_path'] = 'tmp/repositories'
 
 ### Gravatar Settings
@@ -101,7 +102,7 @@ gitlab_rails['gitlab_default_projects_features_container_registry'] = false
 ### Webhook Settings
 ###! Number of seconds to wait for HTTP response after sending webhook HTTP POST
 ###! request (default: 10)
-#!gitlab_rails['webhook_timeout'] = 20
+# gitlab_rails['webhook_timeout'] = 10
 
 ### Trusted proxies
 ###! Customize if you have GitLab behind a reverse proxy which is running on a
@@ -320,8 +321,7 @@ gitlab_rails['backup_keep_time'] = 259_200
 # gitlab_rails['backup_encryption'] = 'AES256'
 
 ###! **Specifies Amazon S3 storage class to use for backups. Valid values
-###!   include 'STANDARD', 'STANDARD_IA', 'GLACIER', and
-###!   'REDUCED_REDUNDANCY'**
+###!   include 'STANDARD', 'STANDARD_IA', and 'REDUCED_REDUNDANCY'**
 # gitlab_rails['backup_storage_class'] = 'STANDARD'
 
 
@@ -623,10 +623,10 @@ user['gid'] = 997
 ##! Docs: https://docs.gitlab.com/omnibus/settings/unicorn.html
 ################################################################################
 
-#!unicorn['worker_timeout'] = 120
+# unicorn['worker_timeout'] = 60
 ###! Minimum worker_processes is 2 at this moment
 ###! See https://gitlab.com/gitlab-org/gitlab-ce/issues/18771
-#!unicorn['worker_processes'] = 2
+# unicorn['worker_processes'] = 2
 
 ### Advanced settings
 # unicorn['listen'] = 'localhost'
@@ -819,6 +819,10 @@ postgresql['gid'] = 995
 ################################################################################
 
 # redis['enable'] = true
+# redis['ha'] = false
+# redis['hz'] = 10
+# redis['dir'] = "/var/opt/gitlab/redis"
+# redis['log_directory'] = "/var/log/gitlab/redis"
 redis['username'] = "gitlab-redis"
 # redis['maxclients'] = "10000"
 # redis['maxmemory'] = "0"
@@ -899,9 +903,9 @@ web_server['gid'] = 998
 ##! Docs: https://docs.gitlab.com/omnibus/settings/nginx.html
 ################################################################################
 
-nginx['enable'] = true
+# nginx['enable'] = true
 # nginx['client_max_body_size'] = '250m'
-nginx['redirect_http_to_https'] = true
+# nginx['redirect_http_to_https'] = false
 # nginx['redirect_http_to_https_port'] = 80
 
 ##! Most root CA's are included by default
@@ -915,8 +919,6 @@ nginx['redirect_http_to_https'] = true
 
 # nginx['ssl_certificate'] = "/etc/gitlab/ssl/#{node['fqdn']}.crt"
 # nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/#{node['fqdn']}.key"
-nginx['ssl_certificate'] = "/etc/ssl/certs/ssl-cert-snakeoil.pem"
-nginx['ssl_certificate_key'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
 # nginx['ssl_ciphers'] = "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256"
 # nginx['ssl_prefer_server_ciphers'] = "on"
 
@@ -1014,12 +1016,12 @@ nginx['sendfile'] = 'off'
 ##! Docs: https://docs.gitlab.com/omnibus/settings/logs.html
 ################################################################################
 
-logging['svlogd_size'] = 100 * 1024 * 1024 # rotate after 200 MB of log data
-logging['svlogd_num'] = 30 # keep 30 rotated log files
-logging['svlogd_timeout'] = 24 * 60 * 60 # rotate after 24 hours
-logging['svlogd_filter'] = "gzip" # compress logs with gzip
-logging['svlogd_udp'] = nil # transmit log messages via UDP
-logging['svlogd_prefix'] = nil # custom prefix for log messages
+# logging['svlogd_size'] = 200 * 1024 * 1024 # rotate after 200 MB of log data
+# logging['svlogd_num'] = 30 # keep 30 rotated log files
+# logging['svlogd_timeout'] = 24 * 60 * 60 # rotate after 24 hours
+# logging['svlogd_filter'] = "gzip" # compress logs with gzip
+# logging['svlogd_udp'] = nil # transmit log messages via UDP
+# logging['svlogd_prefix'] = nil # custom prefix for log messages
 # logging['logrotate_frequency'] = "daily" # rotate logs daily
 # logging['logrotate_size'] = nil # do not rotate by size by default
 # logging['logrotate_rotate'] = 30 # keep 30 rotated logs
@@ -1198,6 +1200,8 @@ logging['svlogd_prefix'] = nil # custom prefix for log messages
 # mattermost['gitlab_token_endpoint'] = "http://gitlab.example.com/oauth/token"
 # mattermost['gitlab_user_api_endpoint'] = "http://gitlab.example.com/api/v4/user"
 # mattermost['file_directory'] = "/var/opt/gitlab/mattermost/data"
+# mattermost['plugin_directory'] = "/var/opt/gitlab/mattermost/plugins"
+# mattermost['plugin_client_directory'] = "/var/opt/gitlab/mattermost/client-plugins"
 
 ################################################################################
 ## Mattermost NGINX
@@ -1593,6 +1597,7 @@ letsencrypt['enable'] = false
 # sidekiq_cluster['ha'] = false
 # sidekiq_cluster['log_directory'] = "/var/log/gitlab/sidekiq-cluster"
 # sidekiq_cluster['interval'] = 5 # The number of seconds to wait between worker checks
+# sidekiq_cluster['max_concurrency'] = 50 # The maximum number of threads each Sidekiq process should run
 
 ##! Each entry in the queue_groups array denotes a group of queues that have to be processed by a
 ##! Sidekiq process. Multiple queues can be processed by the same process by
@@ -1692,6 +1697,8 @@ letsencrypt['enable'] = false
 # }
 # pgbouncer['logfile'] = nil
 # pgbouncer['unix_socket_dir'] = nil
+# pgbouncer['unix_socket_mode'] = '0777'
+# pgbouncer['unix_socket_group'] = nil
 # pgbouncer['auth_type'] = 'md5'
 # pgbouncer['auth_hba_file'] = nil
 # pgbouncer['auth_query'] = 'SELECT username, password FROM public.pg_shadow_lookup($1)'
@@ -1703,7 +1710,56 @@ letsencrypt['enable'] = false
 # }
 # postgresql['pgbouncer_user'] = nil
 # postgresql['pgbouncer_user_password'] = nil
+# pgbouncer['server_reset_query_always'] = 0
+# pgbouncer['server_check_query'] = 'select 1'
+# pgbouncer['server_check_delay'] = 30
+# pgbouncer['max_db_connections'] = nil
+# pgbouncer['max_user_connections'] = nil
+# pgbouncer['syslog'] = 0
+# pgbouncer['syslog_facility'] = 'daemon'
+# pgbouncer['syslog_ident'] = 'pgbouncer'
+# pgbouncer['log_disconnections'] = 1
+# pgbouncer['log_pooler_errors'] = 1
+# pgbouncer['stats_period'] = 60
+# pgbouncer['verbose'] = 0
+# pgbouncer['server_lifetime'] = 3600
+# pgbouncer['server_connect_timeout'] = 15
+# pgbouncer['server_login_retry'] = 15
+# pgbouncer['query_timeout'] = 0
+# pgbouncer['query_wait_timeout'] = 120
+# pgbouncer['client_idle_timeout'] = 0
+# pgbouncer['client_login_timeout'] = 60
+# pgbouncer['autodb_idle_timeout'] = 3600
+# pgbouncer['suspend_timeout'] = 10
+# pgbouncer['idle_transaction_timeout'] = 0
+# pgbouncer['pkt_buf'] = 4096
+# pgbouncer['listen_backlog'] = 128
+# pgbouncer['sbuf_loopcnt'] = 5
+# pgbouncer['max_packet_size'] = 2147483647
+# pgbouncer['tcp_defer_accept'] = 0
+# pgbouncer['tcp_socket_buffer'] = 0
+# pgbouncer['tcp_keepalive'] = 1
+# pgbouncer['tcp_keepcnt'] = 0
+# pgbouncer['tcp_keepidle'] = 0
+# pgbouncer['tcp_keepintvl'] = 0
+# pgbouncer['disable_pqexec'] = 0
+
+## Pgbouncer client TLS options
+# pgbouncer['client_tls_sslmode'] = 'disable'
+# pgbouncer['client_tls_ca_file'] = nil
+# pgbouncer['client_tls_key_file'] = nil
+# pgbouncer['client_tls_cert_file'] = nil
+# pgbouncer['client_tls_protocols'] = 'all'
+# pgbouncer['client_tls_dheparams'] = 'auto'
+# pgbouncer['client_tls_ecdhcurve'] = 'auto'
 #
+## Pgbouncer server  TLS options
+# pgbouncer['server_tls_sslmode'] = 'disable'
+# pgbouncer['server_tls_ca_file'] = nil
+# pgbouncer['server_tls_key_file'] = nil
+# pgbouncer['server_tls_cert_file'] = nil
+# pgbouncer['server_tls_protocols'] = 'all'
+# pgbouncer['server_tls_ciphers'] = 'fast'
 
 ################################################################################
 # Repmgr (EE only)
