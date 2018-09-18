@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 Set-PSDebug -Strict -Trace 1
 
-. .\SetEnvs-Home.ps1
+. .\SetEnvs-Work.ps1
 $Pattern = 'proxy|EXTERNAL_URL|^(VAGRANT|GITLAB|MINGW|MSYS|CYG|SMB_USER|APT|EXTERNAL)'
 Get-ChildItem env:\ | Where-Object {$_.Key -imatch "$Pattern"}
 Pause; $ErrorActionPreference = 'Stop'; Set-PSDebug -Strict -Trace 1

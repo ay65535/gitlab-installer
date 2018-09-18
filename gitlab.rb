@@ -63,12 +63,12 @@ gitlab_rails['time_zone'] = 'Tokyo'
 # gitlab_rails['gitlab_default_theme'] = 2
 
 ### Default project feature settings
-# gitlab_rails['gitlab_default_projects_features_issues'] = true
-# gitlab_rails['gitlab_default_projects_features_merge_requests'] = true
-# gitlab_rails['gitlab_default_projects_features_wiki'] = true
-# gitlab_rails['gitlab_default_projects_features_snippets'] = true
-# gitlab_rails['gitlab_default_projects_features_builds'] = true
-# gitlab_rails['gitlab_default_projects_features_container_registry'] = true
+gitlab_rails['gitlab_default_projects_features_issues'] = true
+gitlab_rails['gitlab_default_projects_features_merge_requests'] = true
+gitlab_rails['gitlab_default_projects_features_wiki'] = false
+gitlab_rails['gitlab_default_projects_features_snippets'] = true
+gitlab_rails['gitlab_default_projects_features_builds'] = true
+gitlab_rails['gitlab_default_projects_features_container_registry'] = false
 
 ### Automatic issue closing
 ###! See https://docs.gitlab.com/ce/customization/issue_closing.html for more
@@ -919,6 +919,8 @@ web_server['gid'] = 998
 
 # nginx['ssl_certificate'] = "/etc/gitlab/ssl/#{node['fqdn']}.crt"
 # nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/#{node['fqdn']}.key"
+#nginx['ssl_certificate'] = "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+#nginx['ssl_certificate_key'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
 # nginx['ssl_ciphers'] = "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256"
 # nginx['ssl_prefer_server_ciphers'] = "on"
 
